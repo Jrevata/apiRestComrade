@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib import admin
-from .models import Deparment, Province, District, Brand, Product, User, Supermarket, Chain, ChainProduct, Order, DetailOrder
+from .models import Deparment, Province, District, Brand, Product, User, Supermarket, Chain, ChainProduct, Order, OrderDetail, Condition
 
 admin.site.register(Deparment)
 admin.site.register(Province)
@@ -14,4 +14,5 @@ admin.site.register(Supermarket)
 admin.site.register(Chain)
 admin.site.register(ChainProduct)
 admin.site.register(Order)
-admin.site.register(DetailOrder)
+admin.site.register(OrderDetail)
+admin.site.register(Condition)

@@ -64,17 +64,30 @@ class User(models.Model):
     idusuario = models.AutoField(primary_key=True)
     apellidos = models.CharField(max_length=45)
     nombres = models.CharField(max_length=45)
-    email = models.CharField(max_length=100)
+    email = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=200)
     fec_registro = models.DateField(auto_now=True)
-    dni = models.CharField(max_length=10, blank=True)
-    distritos_iddistrito = models.ForeignKey(District, on_delete=models.CASCADE, db_column="distritos_iddistrito", blank=True)
+    dni = models.CharField(max_length=10, null=True, blank=True)
+    distritos_iddistrito = models.ForeignKey(District, on_delete=models.CASCADE, db_column="distritos_iddistrito", null=True, blank=True)
 
     class Meta:
         db_table = "usuarios"
 
     def __str__(self):
         return self.nombres + " " + self.apellidos
+
+class Condition(models.Model):
+    idusuario = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, db_column="idusuario")
+    direccionIp = models.CharField(max_length=30)
+    imei = models.CharField(max_length=20)
+    fechahora_registro = models.DateTimeField(auto_now=True)
+    accept = models.BooleanField()
+
+    class Meta:
+        db_table = "condiciones"
+
+    def __str__(self):
+        return str(self.idusuario) + " con imei " + self.imei + " accept: " + str(self.accept)
 
 class Supermarket(models.Model):
     idsupermercado = models.AutoField(primary_key=True)
@@ -89,8 +102,11 @@ class Supermarket(models.Model):
 
 class Chain(models.Model):
     idsede = models.AutoField(primary_key=True)
-    latitud = models.CharField(blank=True, max_length=45)
-    longitud = models.CharField(blank=True, max_length=45)
+    latitud = models.CharField(null=True, max_length=45, blank=True)
+    longitud = models.CharField(null=True, max_length=45, blank=True)
+    latitud2 = models.CharField(null=True, max_length=45, blank=True)
+    longitud2 = models.CharField(null=True, max_length=45, blank=True)
+    direccion = models.CharField(null=True, max_length=100, blank=True)
     iddistrito = models.ForeignKey(District, on_delete=models.CASCADE, db_column="iddistrito")
     idsupermercado = models.ForeignKey(Supermarket, on_delete=models.CASCADE, db_column="idsupermercado")
 
@@ -98,7 +114,7 @@ class Chain(models.Model):
         db_table = "sedes"
 
     def __str__(self):
-        return str(self.idsupermercado) + " de " + str(self.iddistrito)
+        return str(self.idsupermercado) + " de " + str(self.iddistrito) + " direccion " + self.direccion
 
 class ChainProduct(models.Model):
     idproductosede = models.AutoField(primary_key=True)
@@ -117,7 +133,6 @@ class Order(models.Model):
     fec_pedido = models.DateField(auto_now=True)
     usuarios_idusuario = models.ForeignKey(User, on_delete=models.CASCADE, db_column="usuarios_idusuario")
     sedes_idsede = models.ForeignKey(Chain, on_delete=models.CASCADE, db_column="sedes_idsede")
-    total = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
         db_table = "pedidos"
@@ -125,19 +140,21 @@ class Order(models.Model):
     def __str__(self):
         return str(self.usuarios_idusuario) + " con pedido fecha " + str(self.fec_pedido)
 
-class DetailOrder(models.Model):
+class OrderDetail(models.Model):
+    idpedidodeta = models.AutoField(primary_key=True)
     idpedido = models.ForeignKey(Order, on_delete=models.CASCADE, db_column="idpedido")
     idproducto = models.ForeignKey(Product, on_delete=models.CASCADE, db_column="idproducto")
     cantidad = models.IntegerField()
     precioxunidad = models.DecimalField(max_digits=10, decimal_places=2)
-    descuento = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    descuento = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     class Meta:
+        managed = False
         db_table = "pedidosdeta"
 
 
 
     def __str__(self):
-        return str(self.idpedido) + " pidió " + self.cantidad + " " + str(self.idproducto)
+        return str(self.idpedido) + " pidió " + str(self.cantidad) + " " + str(self.idproducto)
 
 

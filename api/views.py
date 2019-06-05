@@ -18,8 +18,8 @@ from keras.preprocessing.image import load_img, img_to_array
 
 
 from rest_framework import viewsets
-from .models import Deparment, Province, ChainProduct, Product, User
-from .serializers import DepartmentSerializar, ProvinceSerializer, ChainProductoSerializer, ProductSerializer, UserSerializer
+from .models import Deparment, Province, ChainProduct, Product, User, Order, OrderDetail, Condition
+from .serializers import DepartmentSerializar, ProvinceSerializer, ChainProductoSerializer, ProductSerializer, UserSerializer, OrderDetailSerializer, OrderSerializer, ConditionSerializer
 from rest_framework.views import APIView, Response
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.hashers import make_password, check_password
@@ -114,5 +114,16 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+class OrderDetailViewSet(viewsets.ModelViewSet):
+    queryset = OrderDetail.objects.all()
+    serializer_class = OrderDetailSerializer
+
+class ConditionViewSet(viewsets.ModelViewSet):
+    queryset = Condition.objects.all()
+    serializer_class = ConditionSerializer
 
 

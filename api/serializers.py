@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Deparment, Chain, Product, Brand, ChainProduct, Province, User, District, Order, Supermarket, DetailOrder
+from .models import Deparment, Chain, Product, Brand, ChainProduct, Province, User, District, Order, Supermarket, OrderDetail, Condition
 import datetime
 from django.contrib.auth.hashers import make_password
 
@@ -91,5 +91,41 @@ class UserSerializer(serializers.Serializer):
 
         return User.objects.create(**validated_data)
 
+class ConditionSerializer(serializers.Serializer):
+    idusuario = serializers.IntegerField()
+    direccionIp = serializers.CharField(max_length=30)
+    imei = serializers.CharField(max_length=20)
+    fechahora_registro = serializers.DateTimeField(required=False)
+    accept = serializers.BooleanField()
 
+    class Meta:
+        model = Condition
+
+    def create(self, validate_data):
+        return Condition.objects.create(**validate_data)
+
+class OrderSerializer(serializers.Serializer):
+    idpedido = serializers.IntegerField()
+    fec_pedido = serializers.DateField(required=False)
+    usuarios_idusuario = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    sedes_idsede = serializers.PrimaryKeyRelatedField(queryset=Chain.objects.all())
+
+    class Meta:
+        model = Order
+
+    def create(self, validated_data):
+        return Order.objects.create(**validated_data)
+
+class OrderDetailSerializer(serializers.Serializer):
+    idpedido = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all())
+    idproducto = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    cantidad = serializers.IntegerField()
+    precioxunidad = serializers.DecimalField(max_digits=10, decimal_places=2)
+    descuento = serializers.DecimalField(max_digits=10, decimal_places=2, required=False)
+
+    class Meta:
+        model = OrderDetail
+
+    def create(self, validated_data):
+        return OrderDetail.objects.create(**validated_data)
 
